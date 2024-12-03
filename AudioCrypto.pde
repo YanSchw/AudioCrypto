@@ -38,21 +38,19 @@ void draw() {
     }
   }*/
   
-  
+  int STEP_SIZE = 10;
   if (secretBuffer != null) {
     stroke(0, 255, 0, 255);
-    for (int i = 0; i < BUFFER_SIZE - 1; i++) {
-      line(width * (float)i/BUFFER_SIZE, height / 2 + secretBuffer[(i) % BUFFER_SIZE] * 100, width * (float)(i+1)/BUFFER_SIZE, height / 2 + secretBuffer[(i + 1) % BUFFER_SIZE] * 100);
-      i += 10;
+    for (int i = 0; i < BUFFER_SIZE - STEP_SIZE; i += STEP_SIZE) {
+      line(width * (float)i/BUFFER_SIZE, height / 2 + secretBuffer[(i) % BUFFER_SIZE] * 100, width * (float)(i+1)/BUFFER_SIZE, height / 2 + secretBuffer[(i + STEP_SIZE) % BUFFER_SIZE] * 100);
      }
      
     text(compareBuffers(ringBuffer, secretBuffer), 20, 20);
   }
   
   stroke(255);
-  for (int i = 0; i < BUFFER_SIZE - 1; i++) {
-    line(width * (float)i/BUFFER_SIZE, height / 2 + ringBuffer[(i + ringBufferIndex) % BUFFER_SIZE] * 100, width * (float)(i+1)/BUFFER_SIZE, height / 2 + ringBuffer[(i + 1 + ringBufferIndex) % BUFFER_SIZE] * 100);
-    i += 10;
+  for (int i = 0; i < BUFFER_SIZE - STEP_SIZE; i += STEP_SIZE) {
+    line(width * (float)i/BUFFER_SIZE, height / 2 + ringBuffer[(i + ringBufferIndex) % BUFFER_SIZE] * 100, width * (float)(i+1)/BUFFER_SIZE, height / 2 + ringBuffer[(i + STEP_SIZE + ringBufferIndex) % BUFFER_SIZE] * 100);
   }
   
 
