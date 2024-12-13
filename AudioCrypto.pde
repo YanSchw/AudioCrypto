@@ -9,6 +9,7 @@ AudioInput in;
 float[] ringBuffer;
 int ringBufferIndex = 0;
 float[] secretBuffer = null;
+int secretStartMillis = 0;
 
 void setup() {
   size(800, 600);
@@ -45,7 +46,9 @@ void draw() {
       line(width * (float)i/BUFFER_SIZE, height / 2 + secretBuffer[(i) % BUFFER_SIZE] * 100, width * (float)(i+1)/BUFFER_SIZE, height / 2 + secretBuffer[(i + STEP_SIZE) % BUFFER_SIZE] * 100);
      }
      
-    text(compareBuffers(ringBuffer, secretBuffer), 20, 20);
+    if (compareBuffers(ringBuffer, secretBuffer)) {
+      secretBuffer = null;
+    }
   }
   
   stroke(255);
@@ -62,6 +65,7 @@ void keyPressed() {
     for(int i = 0; i < BUFFER_SIZE - 1; i++) {
       secretBuffer[i] = ringBuffer[(i + ringBufferIndex) % BUFFER_SIZE];
     }
+    secretStartMillis = millis();
   }
 }
 
@@ -73,13 +77,49 @@ void updateRingBuffer() {
   }
 }
 
-float compareBuffers(float[] buffer1, float[] buffer2) {
-  // Compute the absolute difference between two buffers
-  float totalDifference = 0;
-  for (int i = 0; i < BUFFER_SIZE; i++) {
-    totalDifference += abs(buffer1[i] - buffer2[i]);
+void normalizeBuffer(float[] buffer) {
+  // Step 1: Find the maximum absolute value in the buffer
+  float maxAmplitude = 0;
+  for (int i = 0; i < buffer.length; i++) {
+    maxAmplitude = max(maxAmplitude, abs(buffer[i]));
   }
-  return totalDifference;
+
+  // Step 2: If maxAmplitude is zero, the buffer is silent, and normalization is not needed
+  if (maxAmplitude == 0) return;
+
+  // Step 3: Calculate the normalization factor
+  float normalizationFactor = 1.0 / maxAmplitude;
+
+  // Step 4: Scale all samples by the normalization factor
+  for (int i = 0; i < buffer.length; i++) {
+    buffer[i] *= normalizationFactor;
+  }
+}
+
+
+boolean compareBuffers(float[] buffer1, float[] buffer2) {
+  if (secretStartMillis > millis() - 1500) {
+    return false;
+  }
+  
+  boolean result = true;
+  
+  // Compute the absolute difference between two buffers
+  for (int i = 0; i < BUFFER_SIZE; i++) {
+    int start = i;
+    float totalDifference = 0;
+    for (; i < BUFFER_SIZE && i < start + 1024 * 3; i++) {
+      totalDifference += abs(buffer1[(i + ringBufferIndex) % BUFFER_SIZE]) - abs(buffer2[i]);
+    }
+    totalDifference = abs(totalDifference);
+    fill(255, 255, totalDifference > 50.0 ? 0 : 255);
+    text((int)totalDifference, width * (float)(i)/BUFFER_SIZE - 30, 35);
+    if (totalDifference > 50.0) {
+      result = false;
+    }
+  }
+  
+  return result;
 }
 
 void stop() {
