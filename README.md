@@ -29,3 +29,7 @@ This technology is versatile:
 - Enable password-less logins for apps and devices.
 ### Cost-Effective Implementation:
 Voice frequency analysis uses simple algorithms (like FFT) that can be integrated into most existing hardware and software systems. There’s no need for specialized sensors or expensive infrastructure.
+
+
+## Screenshot
+![Screenshot](Preview.PNG)
