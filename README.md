@@ -33,3 +33,6 @@ Voice frequency analysis uses simple algorithms (like FFT) that can be integrate
 
 ## Screenshot
 ![Screenshot](Preview.PNG)
+
+## Logo
+![Logo](logo.png)
